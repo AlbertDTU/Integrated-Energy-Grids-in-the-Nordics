@@ -201,9 +201,9 @@ network.add(
     bus="electricity bus",
     carrier="battery storage",
     max_hours=2,
-    capital_cost= 2*12894 + 24678,
-    efficiency_store=0.96,
-    efficiency_dispatch=0.96,
+    capital_cost= annuity(25,0.07)*2*290000,
+    efficiency_store=0.98,
+    efficiency_dispatch=0.97,
     p_nom_extendable=True,
     cyclic_state_of_charge=True,
 )
