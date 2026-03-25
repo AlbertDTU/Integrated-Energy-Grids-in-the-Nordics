@@ -135,12 +135,12 @@ test_NOR['date'] = pd.to_datetime(test_NOR[['Year','Month','Day']])
 hydro_inflow_NOR = test_NOR.set_index('date')['Inflow [GWh]'].reindex(network.snapshots).fillna(0).values
 
 network.add(
-    "StorageUnit", f"pumped hydro {country}",
+    "StorageUnit", f"pumped hydro SWE",
     bus="SWE",
     carrier="pumped hydro",
     max_hours=10, # Based on DEA data for energy storage (PHS)
     p_nom_extendable=True, 
-    capital_cost=annuity(20,0.07)*2*10000,
+    capital_cost=annuity(80,0.07)*400000,
     efficiency_store=0.86, # Based on DEA data for energy storage (PHS)
     efficiency_dispatch=0.86, # Based on DEA data for energy storage (PHS)
     cyclic_state_of_charge=True,
@@ -149,12 +149,12 @@ network.add(
 )
 
 network.add(
-    "StorageUnit", f"pumped hydro {country}",
+    "StorageUnit", f"pumped hydro NOR",
     bus="NOR",
     carrier="pumped hydro",
     max_hours=10, 
     p_nom_extendable=True, 
-    capital_cost=annuity(20,0.07)*2*10000,
+    capital_cost=annuity(80,0.07)*400000,
     efficiency_store=0.86, # Based on DEA data for energy storage (PHS)
     efficiency_dispatch=0.86, # Based on DEA data for energy storage (PHS)
     cyclic_state_of_charge=True,
