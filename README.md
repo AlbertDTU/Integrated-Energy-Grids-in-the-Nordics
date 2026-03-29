@@ -21,7 +21,7 @@ In this project, you'll develop a comprehensive energy system model for a chosen
 
 ### Tasks
 
-#### 1a. Single-Country System Optimization
+#### 1a. Single-Country System Optimization (main.py)
 Choose a country, region, city, or specific energy system and calculate optimal capacities for generators:
 
 - Include both renewable and non-renewable technologies
@@ -31,14 +31,14 @@ Choose a country, region, city, or specific energy system and calculate optimal 
   - Annual electricity mix breakdown
   - Duration curves or capacity factors showing each technology's contribution
 
-#### 1b. Interannual Weather Sensitivity
+#### 1b. Interannual Weather Sensitivity (part_b.py)
 Investigate how your results vary year-to-year:
 
 - Run your model using different weather years
 - Plot average capacity and variability for all generator types
 - Discuss key sensitivities identified
 
-#### 1c. Energy Storage Integration
+#### 1c. Energy Storage Integration (main.py)
 Add one or more storage technologies and analyze their role:
 
 - Compare system configuration with and without storage
@@ -48,7 +48,7 @@ Add one or more storage technologies and analyze their role:
   - Seasonal balancing
   - Other relevant timescales
 
-#### 1d. Interconnected Regional Network (DC Approximation)
+#### 1d. Interconnected Regional Network (DC Approximation) (part_d.py)
 Expand the system with neighboring countries:
 
 - Connect your country to **at least 3 neighboring countries** via HVAC transmission lines

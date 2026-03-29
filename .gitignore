@@ -1,2 +1,4 @@
-.vscode/settings.json
+.vscode/
 *.log
+.claude/
+part_e.tex
