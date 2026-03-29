@@ -2,7 +2,7 @@
 
 DTU Course 46770 – February 2026
 
-This repository contains coursework for the Integrated Energy Grids project, including assignments 1 & 2. The work applies advanced grid modeling techniques using PyPSA to optimize energy systems at national and regional scales.
+This repository contains coursework for the Integrated Energy Grids project, including assignment 1 from Group 5. The Python script main contains code for tasks a and c, whereas part_b and part_d script is exclusively for task b and d respectively.
 
 ## 📋 Project Overview
 
