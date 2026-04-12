@@ -44,14 +44,6 @@ network.add("Carrier", "offshorewind")
 network.add("Carrier", "solar")
 network.add("Carrier", "battery storage")
 
-#add a global constraint to limit the total CO2 emissions of the system (e.g. 1 million tonnes)
-n.add("GlobalConstraint",
-      "co2_limit",
-      type="primary_energy",
-      carrier_attribute="co2_emissions",
-      sense="<=",
-      constant=8.27*1e6)   # total CO2 limit in tonnes
-
 # add onshore wind generator
 CF_wind = df_onshorewind[country][[hour.strftime("%Y-%m-%dT%H:%M:%SZ") for hour in network.snapshots]]
 capital_cost_onshorewind = annuity(27,0.07)*1118775 # has been updated
