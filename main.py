@@ -73,6 +73,7 @@ efficiency_CCGT = 0.56 # MWh_e/MWh
 marginal_cost_CCGT = fuel_cost/efficiency_CCGT # in €/MWh_el
 network.add("Generator", "CCGT", bus="electricity bus", p_nom_extendable=True, carrier="gas", capital_cost = capital_cost_CCGT, marginal_cost = marginal_cost_CCGT)
 
+
 network.generators_t.p_max_pu  
 
 # Solve the model (optimize the system)
