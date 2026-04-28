@@ -77,9 +77,9 @@ def build_network():
     return network
 
 # ── CO2 sweep ─────────────────────────────────────────────────────────────────
-# Range: from ~15 Mt (effectively unconstrained for Denmark) down to 0.5 Mt
+# Range: from 9 Mt down to 0.5 Mt
 co2_limits = np.concatenate([
-    np.linspace(15e6, 1e6, 15),
+    np.linspace(9e6, 1e6, 15),
     np.array([0.5e6])
 ])
 
@@ -147,106 +147,61 @@ df_generation.index = df_generation.index / 1e6
 df_cost.index       = df_cost.index / 1e6
 df_emissions.index  = df_emissions.index / 1e6
 
-labels = ['Onshore wind', 'Offshore wind', 'Solar PV', 'Gas (OCGT)', 'Gas (CCGT)', 'Battery storage']
-colors = ['blue', 'dodgerblue', 'orange', 'crimson', 'darkviolet', 'lightgreen']
+TECH_ORDER  = gen_cols
+TECH_LABELS = ['Onshore wind', 'Offshore wind', 'Solar PV', 'Gas (OCGT)', 'Gas (CCGT)', 'Battery storage']
+COLORS      = ['blue', 'dodgerblue', 'orange', 'crimson', 'darkviolet', 'lightgreen']
 
-CO2_REF = 8.27  # Mt — Denmark EU ETS 2024 verified emissions
+CO2_REF = 8.27   # Mt — Denmark EU ETS 2024 verified emissions
+CO2_BIND = 3.3   # Mt — approximate point where CO2 constraint becomes binding
 
-def bar_vline(ax, index_vals, ref_val):
-    """Add a vertical line at ref_val on a bar chart whose x-ticks are integers."""
-    # Bar chart x-positions are 0,1,2,... corresponding to index_vals (high→low)
-    # Interpolate to find the fractional position of ref_val
-    positions = np.arange(len(index_vals))
-    x_ref = np.interp(ref_val, index_vals[::-1], positions[::-1])
-    ax.axvline(x=x_ref, color='black', linestyle='--', linewidth=1.5,
-               label=f'{ref_val} Mt limit', zorder=5)
+# Sort DataFrames high→low CO2 for the area charts
+df_generation = df_generation.sort_index(ascending=False)
+df_capacity   = df_capacity.sort_index(ascending=False)
 
-# ── Plot 1: Generation mix vs CO2 limit (bar) ────────────────────────────────
-fig, ax = plt.subplots(figsize=(9, 5), dpi=300)
-df_generation.plot.bar(stacked=True, ax=ax, color=colors, edgecolor='none', width=0.8)
-bar_vline(ax, df_generation.index.values, CO2_REF)
-ax.set_xlabel('CO₂ limit [Mt CO₂/yr]', fontsize=11)
-ax.set_ylabel('Annual generation [TWh/yr]', fontsize=11)
-ax.set_title('Generation mix vs. CO₂ constraint', fontweight='bold')
-ax.set_xticklabels([f'{v:.1f}' for v in df_generation.index], rotation=45, ha='right')
-ax.legend(labels + [f'{CO2_REF} Mt limit'], bbox_to_anchor=(1.01, 1), loc='upper left', frameon=False)
-plt.tight_layout()
-plt.savefig('part_f_generation_mix.png', dpi=300)
-plt.show()
 
-# ── Plot 1b: Generation mix vs CO2 limit (line) ──────────────────────────────
-fig, ax = plt.subplots(figsize=(9, 5), dpi=300)
-for col, label, color in zip(df_generation.columns, labels, colors):
-    ax.plot(df_generation.index, df_generation[col], marker='o', markersize=4,
-            label=label, color=color, lw=2)
-ax.axvline(x=CO2_REF, color='black', linestyle='--', linewidth=1.5, label=f'{CO2_REF} Mt limit')
-ax.invert_xaxis()
-ax.set_xlabel('CO₂ limit [Mt CO₂/yr]', fontsize=11)
-ax.set_ylabel('Annual generation [TWh/yr]', fontsize=11)
-ax.set_title('Generation mix vs. CO₂ constraint', fontweight='bold')
-ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', frameon=False)
-ax.grid(True, linestyle='--', alpha=0.4)
-plt.tight_layout()
-plt.savefig('part_f_generation_mix_lines.png', dpi=300)
-plt.show()
+def plot_stacked_area(df, ylabel, title, filename):
+    _, ax = plt.subplots(figsize=(10, 5), dpi=300)
 
-# ── Plot 2: Capacity mix vs CO2 limit (bar) ───────────────────────────────────
-fig, ax = plt.subplots(figsize=(9, 5), dpi=300)
-df_capacity.plot.bar(stacked=True, ax=ax, color=colors, edgecolor='none', width=0.8)
-bar_vline(ax, df_capacity.index.values, CO2_REF)
-ax.set_xlabel('CO₂ limit [Mt CO₂/yr]', fontsize=11)
-ax.set_ylabel('Installed capacity [GW]', fontsize=11)
-ax.set_title('Capacity mix vs. CO₂ constraint', fontweight='bold')
-ax.set_xticklabels([f'{v:.1f}' for v in df_capacity.index], rotation=45, ha='right')
-ax.legend(labels + [f'{CO2_REF} Mt limit'], bbox_to_anchor=(1.01, 1), loc='upper left', frameon=False)
-plt.tight_layout()
-plt.savefig('part_f_capacity_mix.png', dpi=300)
-plt.show()
+    x = df.index.values
+    arrays = [df[col].values for col in TECH_ORDER]
 
-# ── Plot 2b: Capacity mix vs CO2 limit (line) ────────────────────────────────
-fig, ax = plt.subplots(figsize=(9, 5), dpi=300)
-for col, label, color in zip(df_capacity.columns, labels, colors):
-    ax.plot(df_capacity.index, df_capacity[col], marker='o', markersize=4,
-            label=label, color=color, lw=2)
-ax.axvline(x=CO2_REF, color='black', linestyle='--', linewidth=1.5, label=f'{CO2_REF} Mt limit')
-ax.invert_xaxis()
-ax.set_xlabel('CO₂ limit [Mt CO₂/yr]', fontsize=11)
-ax.set_ylabel('Installed capacity [GW]', fontsize=11)
-ax.set_title('Capacity mix vs. CO₂ constraint', fontweight='bold')
-ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', frameon=False)
-ax.grid(True, linestyle='--', alpha=0.4)
-plt.tight_layout()
-plt.savefig('part_f_capacity_mix_lines.png', dpi=300)
-plt.show()
+    ax.stackplot(x, *arrays, labels=TECH_LABELS, colors=COLORS, linewidth=0)
+    ax.axvline(x=CO2_REF, color='black', linestyle='--', linewidth=1.2,
+               label=f'{CO2_REF} Mt limit')
+    ax.axvline(x=CO2_BIND, color='grey', linestyle=':', linewidth=1.5,
+               label=f'Constraint binding ({CO2_BIND} Mt)')
+    ymax = ax.get_ylim()[1]
+    ax.text(CO2_BIND + 0.15, ymax * 0.95, f'{CO2_BIND} Mt\n(binding)',
+            fontsize=8, color='grey', fontweight='bold',
+            ha='left', va='top')
 
-# ── Plot 3: System cost vs CO2 limit ──────────────────────────────────────────
-fig, ax = plt.subplots(figsize=(7, 4), dpi=300)
-ax.plot(df_cost.index, df_cost.values, marker='o', color='steelblue', lw=2)
-ax.set_xlabel('CO₂ limit [Mt CO₂/yr]', fontsize=11)
-ax.set_ylabel('Total annual system cost [M€/yr]', fontsize=11)
-ax.set_title('System cost vs. CO₂ constraint', fontweight='bold')
-ax.invert_xaxis()  # tighter constraint on the right
-ax.grid(True, linestyle='--', alpha=0.5)
-plt.tight_layout()
-plt.savefig('part_f_system_cost.png', dpi=300)
-plt.show()
+    ax.set_xlabel('CO\u2082 limit [Mt CO\u2082/yr]', fontsize=11)
+    ax.set_ylabel(ylabel, fontsize=11)
+    ax.set_title(title, fontweight='bold', fontsize=12)
+    ax.set_xlim(x[0], x[-1])
+    ax.invert_xaxis()
+    ax.grid(True, linestyle='--', alpha=0.3, axis='y')
 
-# ── Plot 4: CO2 emissions per generator vs CO2 limit ─────────────────────────
-fig, ax = plt.subplots(figsize=(9, 5), dpi=300)
-df_emissions.plot.bar(stacked=True, ax=ax, color=['crimson', 'darkviolet'],
-                      edgecolor='none', width=0.8)
+    handles, labels_ = ax.get_legend_handles_labels()
+    ax.legend(handles, labels_, bbox_to_anchor=(1.01, 1), loc='upper left',
+              frameon=False, fontsize=9)
 
-# Overlay the CO2 limit as a reference line (shows when constraint is binding)
-x_positions = range(len(df_emissions))
-ax.plot(x_positions, df_emissions.index, color='black', linestyle='--',
-        linewidth=1.5, label='CO₂ limit', zorder=5)
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.show()
+    print(f'  Saved {filename}')
 
-ax.set_xlabel('CO₂ limit [Mt CO₂/yr]', fontsize=11)
-ax.set_ylabel('CO₂ emissions [Mt CO₂/yr]', fontsize=11)
-ax.set_title('CO₂ emissions per generator vs. CO₂ constraint', fontweight='bold')
-ax.set_xticklabels([f'{v:.1f}' for v in df_emissions.index], rotation=45, ha='right')
-ax.legend(['Gas (OCGT)', 'Gas (CCGT)', 'CO₂ limit'], bbox_to_anchor=(1.01, 1),
-          loc='upper left', frameon=False)
-plt.tight_layout()
-plt.savefig('part_f_co2_emissions.png', dpi=300)
-plt.show()
+
+plot_stacked_area(
+    df_generation,
+    ylabel='Annual generation [TWh/yr]',
+    title='Generation mix vs. CO\u2082 constraint (Denmark)',
+    filename='part_f_generation_mix.png',
+)
+
+plot_stacked_area(
+    df_capacity,
+    ylabel='Installed capacity [GW]',
+    title='Capacity mix vs. CO\u2082 constraint (Denmark)',
+    filename='part_f_capacity_mix.png',
+)
