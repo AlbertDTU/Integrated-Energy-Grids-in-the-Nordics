@@ -356,7 +356,7 @@ ax.legend([
     'Hydro'
 ])
 plt.tight_layout()
-plt.savefig("1g_capacities.png", dpi=300, bbox_inches="tight")
+plt.savefig("part_g/1g_capacities.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -387,7 +387,7 @@ ax.pie(
     labeldistance=1.18
 )
 plt.tight_layout()
-plt.savefig("1g_total_capacities.png", dpi=300, bbox_inches="tight")
+plt.savefig("part_g/1g_total_capacities.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -452,7 +452,7 @@ ax.pie(
 )
 plt.title('Annual electricity generation mix', y=1.05, fontweight='bold')
 plt.tight_layout()
-plt.savefig('1g_annual_generation_mix.png', dpi=300)
+plt.savefig('part_g/1g_annual_generation_mix.png', dpi=300)
 plt.show()
 
 
@@ -538,7 +538,7 @@ plt.xlabel('Hours')
 plt.title('Duration curve of generation and storage operation')
 plt.legend(fancybox=True, shadow=True, loc='best')
 plt.tight_layout()
-plt.savefig('1g_duration_curve.png', dpi=300)
+plt.savefig('part_g/1g_duration_curve.png', dpi=300)
 plt.show()
 
 
@@ -601,7 +601,7 @@ ax.set_ylabel("Transported energy [TWh/year]")
 ax.set_title("Annual transported energy: electricity vs gas network")
 
 plt.tight_layout()
-plt.savefig("1g_transport_comparison.png", dpi=300, bbox_inches="tight")
+plt.savefig("part_g/1g_transport_comparison.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -634,5 +634,5 @@ ax.set_title("Average absolute flow in gas pipelines")
 plt.xticks(rotation=45, ha="right")
 
 plt.tight_layout()
-plt.savefig("1g_gas_pipeline_flows.png", dpi=300, bbox_inches="tight")
+plt.savefig("part_g/1g_gas_pipeline_flows.png", dpi=300, bbox_inches="tight")
 plt.show()

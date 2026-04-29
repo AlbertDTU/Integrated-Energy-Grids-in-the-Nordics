@@ -229,7 +229,7 @@ ax.set_ylabel("Installed capacity [GW]")
 ax.set_xlabel("")
 ax.legend(['Onshore wind', 'Offshore wind', 'Solar PV', 'Gas (OCGT)', 'Gas (CCGT)', 'Battery storage', 'Hydro'])
 plt.tight_layout()
-plt.savefig("1d_capacities.png", dpi=300, bbox_inches="tight")
+plt.savefig("part_h/1d_capacities.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 total_capacities = cap_table.sum(axis=0)
@@ -246,7 +246,7 @@ ax.pie(
     labeldistance=1.18
 )
 plt.tight_layout()
-plt.savefig("1d_total_capacities.png", dpi=300, bbox_inches="tight")
+plt.savefig("part_h/1d_total_capacities.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 gen_by_name = network.generators_t.p.sum() / 1e6
@@ -279,7 +279,7 @@ ax.pie(
 )
 plt.title('Annual electricity generation mix', y=1.05, fontweight='bold')
 plt.tight_layout()
-plt.savefig('1d_annual_generation_mix.png', dpi=300)
+plt.savefig('part_h/1d_annual_generation_mix.png', dpi=300)
 plt.show()
 
 # Duration curve plot
@@ -310,7 +310,7 @@ plt.xlabel('Hours')
 plt.title('Duration curve of generation and storage operation')
 plt.legend(fancybox=True, shadow=True, loc='best')
 plt.tight_layout()
-plt.savefig('1d_duration_curve.png', dpi=300)
+plt.savefig('part_h/1d_duration_curve.png', dpi=300)
 plt.show()
 
 #print('plots are done')

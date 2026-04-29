@@ -117,7 +117,7 @@ plt.pie(cap_sizes, colors=colors,
 plt.axis('equal')
 plt.title('Installed capacity mix (with battery storage)', y=1.05, fontweight='bold')
 plt.tight_layout()
-plt.savefig('1c_installed_capacity_mix.png', dpi=300)
+plt.savefig('part_c/1c_installed_capacity_mix.png', dpi=300)
 plt.show()
 
 # Battery storage stackplot — full year
@@ -141,7 +141,7 @@ ax.set_ylabel("MW")
 ax.set_title("Battery storage behaviour — full year")
 ax.legend(frameon=False, bbox_to_anchor=(1.05, 1))
 plt.tight_layout()
-plt.savefig('1c_battery_stackplot_year.png', dpi=300)
+plt.savefig('part_c/1c_battery_stackplot_year.png', dpi=300)
 plt.show()
 
 # Battery state of charge — one summer week and one winter week
@@ -155,7 +155,7 @@ for ax, (start, end, season) in zip(axes, [(0, 168, 'Winter (Jan)'), (4344, 4512
     ax.grid(True, linestyle='--', alpha=0.4)
 
 plt.tight_layout()
-plt.savefig('1c_battery_soc.png', dpi=300)
+plt.savefig('part_c/1c_battery_soc.png', dpi=300)
 plt.show()
 
 # Dispatch stackplot — one summer week and one winter week
@@ -184,5 +184,5 @@ for start, end, season, fname in [
     ax.set_title(f'Dispatch with battery storage — {season}')
     ax.legend(frameon=False, bbox_to_anchor=(1.05, 1), fontsize=8)
     plt.tight_layout()
-    plt.savefig(fname, dpi=300)
+    plt.savefig(f'part_c/{fname}', dpi=300)
     plt.show()

@@ -93,14 +93,19 @@ plt.pie(cap_sizes, colors=colors_a,
 plt.axis('equal')
 plt.title('Installed capacity mix', y=1.05, fontweight='bold')
 plt.tight_layout()
-plt.savefig('1a_installed_capacity_mix.png', dpi=300)
+plt.savefig('part_a/1a_installed_capacity_mix.png', dpi=300)
 plt.show()
 
 # Dispatch: first week of January (winter)
 plt.figure(figsize=(8, 5), dpi=300)
+plt.stackplot(
+    network.snapshots[0:168],
+    [network.generators_t.p[n][0:168] for n in model_names_a],
+    labels=labels_a,
+    colors=colors_a,
+    alpha=0.85
+)
 plt.plot(network.loads_t.p['load'][0:168], color='grey', label='Demand', lw=4)
-for n, l, c in zip(model_names_a, labels_a, colors_a):
-    plt.plot(network.generators_t.p[n][0:168], color=c, label=l)
 plt.ylabel('Generation [MWh/h]')
 plt.title('Electricity generation — first week of January 2015')
 plt.xlabel('Time')
@@ -108,14 +113,19 @@ plt.xlim(network.snapshots[0], network.snapshots[167])
 plt.xticks(rotation=45)
 plt.legend(fancybox=True, shadow=True, loc='best')
 plt.tight_layout()
-plt.savefig('1a_timeseries_winter.png', dpi=300)
+plt.savefig('part_a/1a_timeseries_winter.png', dpi=300)
 plt.show()
 
 # Dispatch: first week of July (summer)
 plt.figure(figsize=(8, 5), dpi=300)
+plt.stackplot(
+    network.snapshots[4344:4512],
+    [network.generators_t.p[n][4344:4512] for n in model_names_a],
+    labels=labels_a,
+    colors=colors_a,
+    alpha=0.85
+)
 plt.plot(network.loads_t.p['load'][4344:4512], color='grey', label='Demand', lw=4)
-for n, l, c in zip(model_names_a, labels_a, colors_a):
-    plt.plot(network.generators_t.p[n][4344:4512], color=c, label=l)
 plt.ylabel('Generation [MWh/h]')
 plt.title('Electricity generation — first week of July 2015')
 plt.xlabel('Time')
@@ -123,7 +133,7 @@ plt.xlim(network.snapshots[4344], network.snapshots[4511])
 plt.xticks(rotation=45)
 plt.legend(fancybox=True, shadow=True, loc='best')
 plt.tight_layout()
-plt.savefig('1a_timeseries_summer.png', dpi=300)
+plt.savefig('part_a/1a_timeseries_summer.png', dpi=300)
 plt.show()
 
 # Annual generation mix pie chart
@@ -136,7 +146,7 @@ plt.pie(sizes, colors=colors_a,
 plt.axis('equal')
 plt.title('Annual electricity generation mix', y=1.05, fontweight='bold')
 plt.tight_layout()
-plt.savefig('1a_annual_generation_mix.png', dpi=300)
+plt.savefig('part_a/1a_annual_generation_mix.png', dpi=300)
 plt.show()
 
 # Duration curves
@@ -149,7 +159,7 @@ plt.xlabel('Hours')
 plt.title('Duration curve of generation')
 plt.legend(fancybox=True, shadow=True, loc='best')
 plt.tight_layout()
-plt.savefig('1a_duration_curve.png', dpi=300)
+plt.savefig('part_a/1a_duration_curve.png', dpi=300)
 plt.show()
 
 # Normalised duration curves (capacity factors)
@@ -163,5 +173,5 @@ plt.xlabel('Hours')
 plt.title('Normalised duration curve (capacity factors)')
 plt.legend(fancybox=True, shadow=True, loc='best')
 plt.tight_layout()
-plt.savefig('1a_duration_curve_CFs.png', dpi=300)
+plt.savefig('part_a/1a_duration_curve_CFs.png', dpi=300)
 plt.show()
