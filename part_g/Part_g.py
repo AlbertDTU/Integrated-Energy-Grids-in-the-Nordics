@@ -103,8 +103,8 @@ network.add(
 
 # Fixed gas pipeline capacities in MW
 gas_links = [
-    ("DNK_gas", "SWE_gas", 1958),
-    ("SWE_gas", "DNK_gas", 1958),
+    ("DNK_gas", "SWE_gas", 3960),
+    ("SWE_gas", "DNK_gas", 3960),
     ("DNK_gas", "NOR_gas", 1400),
     ("NOR_gas", "DNK_gas", 1400),
     ("DNK_gas", "DEU_gas", 3500),
@@ -343,18 +343,38 @@ cap_table.plot(
     rot=0,
     ax=ax
 )
+
 ax.set_ylabel("Installed capacity [GW]")
 ax.set_xlabel("")
-ax.legend(['Onshore wind', 'Offshore wind', 'Solar PV', 'Gas (OCGT)', 'Gas (CCGT)', 'Battery storage', 'Hydro'])
+ax.legend([
+    'Onshore wind',
+    'Offshore wind',
+    'Solar PV',
+    'Gas (OCGT)',
+    'Gas (CCGT)',
+    'Battery storage',
+    'Hydro'
+])
 plt.tight_layout()
 plt.savefig("1g_capacities.png", dpi=300, bbox_inches="tight")
 plt.show()
+
 
 # -----------------------------
 # TOTAL INSTALLED CAPACITY PIE CHART
 # -----------------------------
 total_capacities = cap_table.sum(axis=0)
-tech_labels = ['Onshore wind', 'Offshore wind', 'Solar PV', 'Gas (OCGT)', 'Gas (CCGT)', 'Battery storage', 'Hydro']
+
+tech_labels = [
+    'Onshore wind',
+    'Offshore wind',
+    'Solar PV',
+    'Gas (OCGT)',
+    'Gas (CCGT)',
+    'Battery storage',
+    'Hydro'
+]
+
 perc = 100 * total_capacities / total_capacities.sum()
 labels = [f"{tech}\n{p:.1f}%" for tech, p in zip(tech_labels, perc)]
 
@@ -370,29 +390,51 @@ plt.tight_layout()
 plt.savefig("1g_total_capacities.png", dpi=300, bbox_inches="tight")
 plt.show()
 
+
 # -----------------------------
 # ANNUAL GENERATION MIX
-# PART G: gas generation now comes from links, not generators
 # -----------------------------
+
+# Renewable generators
 gen_by_name = network.generators_t.p.sum() / 1e6
 gen_by_name.index = gen_by_name.index.str.replace(r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True)
 gen_by_tech = gen_by_name.groupby(gen_by_name.index).sum()
 
+# Storage dispatch only positive output
 storage_by_name = network.storage_units_t.p.clip(lower=0).sum() / 1e6
-storage_by_name.index = storage_by_name.index.str.replace(r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True)
+storage_by_name.index = storage_by_name.index.str.replace(
+    r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True
+)
 storage_by_tech = storage_by_name.groupby(storage_by_name.index).sum()
 
-# PART G: gas-to-power output from links
-gas_power_links = [name for name in network.links.index if name.startswith("OCGT ") or name.startswith("CCGT ")]
-gas_link_output = (-network.links_t.p1[gas_power_links]).clip(lower=0).sum() / 1e6
-gas_link_output.index = gas_link_output.index.str.replace(r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True)
+# Gas-to-power links
+gas_power_links = [
+    name for name in network.links.index
+    if name.startswith("OCGT ") or name.startswith("CCGT ")
+]
+
+# Important: p1 is negative for output, so use -p1
+gas_link_output = -network.links_t.p1[gas_power_links].sum() / 1e6
+gas_link_output.index = gas_link_output.index.str.replace(
+    r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True
+)
 gas_link_output = gas_link_output.groupby(gas_link_output.index).sum()
 
-generation_mix = pd.concat([gen_by_tech, gas_link_output, storage_by_tech]).reindex(
-    ["Onshore wind", "Offshore wind", "Solar", "OCGT", "CCGT", "battery storage", "pumped hydro"]
-).fillna(0)
+generation_mix = pd.concat([
+    gen_by_tech,
+    gas_link_output,
+    storage_by_tech
+]).reindex([
+    "Onshore wind",
+    "Offshore wind",
+    "Solar",
+    "OCGT",
+    "CCGT",
+    "battery storage",
+    "pumped hydro"
+]).fillna(0)
 
-print("Annual generation mix in TWh:")
+print("\nAnnual generation mix [TWh]:")
 print(generation_mix)
 
 perc_gen = 100 * generation_mix / generation_mix.sum()
@@ -405,41 +447,91 @@ ax.pie(
     colors=['blue', 'dodgerblue', 'orange', 'crimson', 'darkviolet', 'lightgreen', 'pink'],
     startangle=90,
     labeldistance=1.18,
-    wedgeprops={'linewidth': 0}
+    wedgeprops={'linewidth': 0},
+    textprops={'fontsize': 6}
 )
 plt.title('Annual electricity generation mix', y=1.05, fontweight='bold')
 plt.tight_layout()
 plt.savefig('1g_annual_generation_mix.png', dpi=300)
 plt.show()
 
+
 # -----------------------------
 # DURATION CURVE
-# PART G: include gas generation from links
 # -----------------------------
+
+# Renewable dispatch
 gen_dispatch = network.generators_t.p.copy()
-gen_dispatch.columns = gen_dispatch.columns.str.replace(r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True)
+gen_dispatch.columns = gen_dispatch.columns.str.replace(
+    r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True
+)
 gen_by_tech_time = gen_dispatch.T.groupby(level=0).sum().T
 
+# Storage dispatch
 storage_dispatch = network.storage_units_t.p.copy()
-storage_dispatch.columns = storage_dispatch.columns.str.replace(r"(battery storage|pumped hydro)\s+(DNK|SWE|NOR|DEU)$", r"\1", regex=True)
+storage_dispatch.columns = storage_dispatch.columns.str.replace(
+    r"(battery storage|pumped hydro)\s+(DNK|SWE|NOR|DEU)$",
+    r"\1",
+    regex=True
+)
 storage_by_tech_time = storage_dispatch.T.groupby(level=0).sum().T
 
-gas_dispatch = (-network.links_t.p1[gas_power_links]).copy().clip(lower=0)
-gas_dispatch.columns = gas_dispatch.columns.str.replace(r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True)
+# Gas dispatch from links
+gas_dispatch = -network.links_t.p1[gas_power_links].copy()
+gas_dispatch.columns = gas_dispatch.columns.str.replace(
+    r"\s+(DNK|SWE|NOR|DEU)$", "", regex=True
+)
 gas_by_tech_time = gas_dispatch.T.groupby(level=0).sum().T
 
-dispatch_by_tech_time = pd.concat([gen_by_tech_time, gas_by_tech_time, storage_by_tech_time], axis=1)
+dispatch_by_tech_time = pd.concat([
+    gen_by_tech_time,
+    gas_by_tech_time,
+    storage_by_tech_time
+], axis=1)
+
 dispatch_by_tech_time = dispatch_by_tech_time.T.groupby(level=0).sum().T
 
-tech_order = ["Onshore wind", "Offshore wind", "Solar", "OCGT", "CCGT", "battery storage", "pumped hydro"]
-plot_labels = ["Onshore wind", "Offshore wind", "Solar PV", "Gas (OCGT)", "Gas (CCGT)", "Battery storage", "Hydro"]
-plot_colors = ['blue', 'dodgerblue', 'orange', 'crimson', 'darkviolet', 'lightgreen', 'pink']
+tech_order = [
+    "Onshore wind",
+    "Offshore wind",
+    "Solar",
+    "OCGT",
+    "CCGT",
+    "battery storage",
+    "pumped hydro"
+]
+
+plot_labels = [
+    "Onshore wind",
+    "Offshore wind",
+    "Solar PV",
+    "Gas (OCGT)",
+    "Gas (CCGT)",
+    "Battery storage",
+    "Hydro"
+]
+
+plot_colors = [
+    'blue',
+    'dodgerblue',
+    'orange',
+    'crimson',
+    'darkviolet',
+    'lightgreen',
+    'pink'
+]
 
 plt.figure(figsize=(8, 5), dpi=300)
+
 for tech, label, color in zip(tech_order, plot_labels, plot_colors):
     if tech in dispatch_by_tech_time.columns:
-        sorted_dispatch = dispatch_by_tech_time[tech].sort_values(ascending=False).reset_index(drop=True)
+        sorted_dispatch = (
+            dispatch_by_tech_time[tech]
+            .sort_values(ascending=False)
+            .reset_index(drop=True)
+        )
         plt.plot(sorted_dispatch, label=label, color=color, lw=2.5)
+
 plt.axhline(0, color='black', lw=0.8)
 plt.ylabel('Dispatch [MWh/h]')
 plt.xlabel('Hours')
@@ -449,54 +541,98 @@ plt.tight_layout()
 plt.savefig('1g_duration_curve.png', dpi=300)
 plt.show()
 
+
 # -----------------------------
-# PART G - GAS FLOW ANALYSIS
+# PART G - ENERGY TRANSPORT COMPARISON
 # -----------------------------
-gas_link_names = [name for name in network.links.index if name.startswith("gas_pipeline_")]
+
+# Gas pipeline flows
+gas_link_names = [
+    name for name in network.links.index
+    if name.startswith("gas_pipeline_")
+]
+
 gas_flows = network.links_t.p0[gas_link_names].copy()
 
+# Total transported gas [TWh/year]
 total_gas_transport_twh = gas_flows.abs().sum().sum() / 1e6
+
+# Total transported electricity [TWh/year]
 total_electricity_transport_twh = network.lines_t.p0.abs().sum().sum() / 1e6
 
-print(f"Total electricity transported: {total_electricity_transport_twh:.2f} TWh")
-print(f"Total gas transported: {total_gas_transport_twh:.2f} TWh")
+print("\n--- Part G: Energy Transport Comparison ---")
+print(f"Total electricity transported: {total_electricity_transport_twh:.2f} TWh/year")
+print(f"Total gas transported: {total_gas_transport_twh:.2f} TWh/year")
+
+if total_gas_transport_twh > total_electricity_transport_twh:
+    print("The gas network transports more energy than the electricity network.")
+else:
+    print("The electricity network transports more energy than the gas network.")
+
 
 # -----------------------------
-# PART G - GAS TO POWER OUTPUT BY LINK
+# GAS-TO-POWER OUTPUT BY PLANT
 # -----------------------------
-gas_power_links = [name for name in network.links.index if name.startswith("OCGT ") or name.startswith("CCGT ")]
-gas_power_output = network.links_t.p1[gas_power_links].sum() / 1e6
 
-print("Annual gas-to-power generation by plant [TWh]:")
+gas_power_output = -network.links_t.p1[gas_power_links].sum() / 1e6
+
+print("\nAnnual gas-to-power generation by plant [TWh]:")
 print(gas_power_output)
 
+
 # -----------------------------
-# PART G - COMPARISON GRAPH
-# Electricity network vs gas network
+# COMPARISON GRAPH
 # -----------------------------
+
 comparison = pd.Series({
     "Electricity network": total_electricity_transport_twh,
     "Gas network": total_gas_transport_twh
 })
 
 fig, ax = plt.subplots(figsize=(6, 5), dpi=300)
-comparison.plot(kind="bar", ax=ax, color=["steelblue", "darkorange"], rot=0)
-ax.set_ylabel("Transported energy [TWh]")
-ax.set_title("Comparison of transported energy in electricity and gas networks")
+comparison.plot(
+    kind="bar",
+    ax=ax,
+    color=["steelblue", "darkorange"],
+    rot=0
+)
+
+ax.set_ylabel("Transported energy [TWh/year]")
+ax.set_title("Annual transported energy: electricity vs gas network")
+
 plt.tight_layout()
 plt.savefig("1g_transport_comparison.png", dpi=300, bbox_inches="tight")
 plt.show()
 
+
 # -----------------------------
-# PART G - GAS PIPELINE FLOW GRAPH
+# GAS PIPELINE FLOW GRAPH
 # -----------------------------
-avg_abs_gas_flow = gas_flows.abs().mean().sort_values(ascending=False)
+
+# Map pipeline names to country pairs
+pipeline_labels = {}
+
+for name in gas_link_names:
+    bus0 = network.links.loc[name, "bus0"].replace("_gas", "")
+    bus1 = network.links.loc[name, "bus1"].replace("_gas", "")
+    pipeline_labels[name] = f"{bus0} → {bus1}"
+
+# Rename index
+avg_abs_gas_flow = gas_flows.abs().mean()
+avg_abs_gas_flow.index = avg_abs_gas_flow.index.map(pipeline_labels)
+avg_abs_gas_flow = avg_abs_gas_flow.sort_values(ascending=False)
 
 fig, ax = plt.subplots(figsize=(8, 5), dpi=300)
-avg_abs_gas_flow.plot(kind="bar", ax=ax, color="darkorange")
+avg_abs_gas_flow.plot(
+    kind="bar",
+    ax=ax,
+    color="darkorange"
+)
+
 ax.set_ylabel("Average absolute gas flow [MW]")
 ax.set_title("Average absolute flow in gas pipelines")
 plt.xticks(rotation=45, ha="right")
+
 plt.tight_layout()
 plt.savefig("1g_gas_pipeline_flows.png", dpi=300, bbox_inches="tight")
 plt.show()
