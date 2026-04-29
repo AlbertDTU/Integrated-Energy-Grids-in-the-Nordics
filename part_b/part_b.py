@@ -105,7 +105,7 @@ leg = ax.legend(handles=handles, loc="upper right", frameon=True, title="Mean ±
 leg.get_title().set_fontweight("bold")
 plt.title("Installed capacities across different weather years", fontweight="bold")
 plt.tight_layout()
-plt.savefig('1b_installed_capacities_weather_years.png', dpi=300)
+plt.savefig('part_b/1b_installed_capacities_weather_years.png', dpi=300)
 plt.show()
 
 
