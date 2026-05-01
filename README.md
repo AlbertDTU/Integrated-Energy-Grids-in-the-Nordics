@@ -12,8 +12,8 @@ In this project, you'll develop a comprehensive energy system model for a chosen
 
 ## 📝 Assignment 1 – System Optimization & Network Analysis
 
-**Deadline:** March 25, 2026, 23:55  
-**Format:** Group report (4 students, max 6 pages)  
+**Deadline:** May 01, 2026, 23:55  
+**Format:** Group report (4 students)  
 **Submission:** DTULearn
 
 ### Prerequisites
@@ -21,53 +21,21 @@ In this project, you'll develop a comprehensive energy system model for a chosen
 
 ### Tasks
 
-#### 1a. Single-Country System Optimization (main.py)
-Choose a country, region, city, or specific energy system and calculate optimal capacities for generators:
+Part 1:
 
-- Include both renewable and non-renewable technologies
-- Document all cost assumptions and technological parameters with references
-- **Analysis required:**
-  - Dispatch time series plots for one summer week and one winter week
-  - Annual electricity mix breakdown
-  - Duration curves or capacity factors showing each technology's contribution
+a) Single country optimal capacity mix for renewable and non-renewable generators; dispatch time series, annual electricity mix, and duration curves.
+b) Sensitivity of results to interannual variability in solar and wind generation across multiple weather years.
+c) Storage technology integration; impact on optimal system configuration and balancing strategies across intraday and seasonal timescales.
+d) Multi-country network with HVDC interconnectors and at least one closed cycle; linearised AC power flow (DC approximation) optimisation.
+e) Manual calculation of incidence matrix and PTDF matrix; verification of power flows against PyPSA results for the first time step.
 
-#### 1b. Interannual Weather Sensitivity (part_b.py)
-Investigate how your results vary year-to-year:
+Part 2:
 
-- Run your model using different weather years
-- Plot average capacity and variability for all generator types
-- Discuss key sensitivities identified
-
-#### 1c. Energy Storage Integration (main.py)
-Add one or more storage technologies and analyze their role:
-
-- Compare system configuration with and without storage
-- Evaluate storage behavior and charging/discharging patterns
-- Discuss balancing strategies at different timescales:
-  - Intraday balancing
-  - Seasonal balancing
-  - Other relevant timescales
-
-#### 1d. Interconnected Regional Network (DC Approximation) (part_d.py)
-Expand the system with neighboring countries:
-
-- Connect your country to **at least 3 neighboring countries** via HVAC transmission lines
-- Include **at least one closed loop** in the network
-- Set transmission capacities based on existing infrastructure data
-- Technical assumptions:
-  - Voltage level: 400 kV
-  - Reactance: x = 0.1
-- Optimize the interconnected system using **linearized AC power flow (DC approximation)**
-- Discuss results and cross-border power flows
-
-#### 1e. Manual Network Analysis (Pen & Paper)
-Replicate simulation results analytically:
-
-- Calculate the **incidence matrix** of your network
-- Calculate the **Power Transfer Distribution Factor (PTDF) matrix**
-- Extract generation-demand imbalances from the first time step
-- Using the PTDF matrix, manually calculate optimal line flows
-- Verify results match your PyPSA simulation
+f) Single-country sensitivity of optimal capacity mix to CO2 constraints, benchmarked against national historical emissions.
+g) Multi-country model with gas pipeline transport (H2 or CH4); comparison of electricity vs. gas network energy flows.
+h) CO2 shadow price analysis for a selected decarbonisation target; comparison against real-world ETS and national carbon tax levels.
+i) Sector coupling: co-optimisation of electricity and heating sectors.
+j) Sensitivity analysis on gas price (30–120 €/MWh) and offshore wind capital cost reductions (−20% to −60%) across 12 scenarios.
 
 ---
 
